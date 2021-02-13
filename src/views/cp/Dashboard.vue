@@ -32,7 +32,7 @@
                         </dt>
                         <dd>
                           <div class="text-lg font-medium text-gray-900">
-                            $00.00
+                            €{{user.balance}},-
                           </div>
                         </dd>
                       </dl>
@@ -73,7 +73,7 @@
                     </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="bg-white">
+                    <tr v-for="(activity, key) in user.payments" :key="key" class="bg-white">
                       <td class="max-w-0 w-full px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div class="flex">
                           <a href="#" class="group inline-flex space-x-2 truncate text-sm">
@@ -82,14 +82,14 @@
                               <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                             </svg>
                             <p class="text-gray-500 truncate group-hover:text-gray-900">
-                              Payment to Molly Sanders
+                              Deposit to account
                             </p>
                           </a>
                         </div>
                       </td>
                       <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-gray-500">
-                        <span class="text-gray-900 font-medium">$20,000 </span>
-                        USD
+                        <span class="text-gray-900 font-medium">€{{ activity.amount }},-</span>
+                        EURO
                       </td>
                       <td class="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
@@ -97,7 +97,7 @@
                         </span>
                       </td>
                       <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-gray-500">
-                        July 11, 2020
+                        {{ formatDate(activity.created_at) }}
                       </td>
                     </tr>
 
@@ -150,6 +150,7 @@ import MobileSidebar from '@/components/layout/Sidebar.mobile'
 import Sidebar from '@/components/layout/Sidebar.desktop'
 import TopHeader from '@/components/layout/TopHeader'
 import Header from '@/components/layout/Header'
+import axios from "axios";
 
 export default {
   name: "dashboard.cp.vue",
@@ -162,15 +163,59 @@ export default {
   data () {
     return {
       activity: [],
+      user: {},
       showMobileSidebar: false,
+      sessionToken: sessionStorage.getItem('crypto.auth.bearer'),
     }
   },
+  // computed: {
+  //   activity: function () {
+  //     const activities = [];
+  //
+  //     for (let i = 0; i < this.user.payments; i++) {
+  //       const payment = {
+  //
+  //       }
+  //     }
+  //
+  //     return activities;
+  //   }
+  // },
+  mounted: async function () {
+    if (this.sessionToken === undefined || this.sessionToken === null) {
+      this.$router.push({ name: 'sign-in', params: {
+          error: {
+            exception: "Token is not valid.",
+            message:  "Your authentication token expired."
+          }
+        }});
+    }
+
+    await this.fetchUserData();
+  },
   methods: {
+    fetchUserData: async function () {
+      await axios.get(`${process.env.VUE_APP_SERVICE_URL}/profile/${this.sessionToken}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => {
+        if (response.status === 200) {
+          this.user = response.data.user;
+          this.activity = this.user.payments;
+        }
+      }).catch(e => {
+        this.error = JSON.parse(e.request.response);
+      });
+    },
     deposit: function () {
       this.$router.push({ name: 'account.deposit'} );
     },
     toggleMobileSidebar: function () {
       this.showMobileSidebar = !this.showMobileSidebar;
+    },
+    formatDate: function(date) {
+      return new Date(date).toLocaleDateString();
     }
   }
 }

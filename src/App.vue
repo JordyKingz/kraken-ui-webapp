@@ -22,7 +22,7 @@ export default {
     this.$store.dispatch("initTheme");
 
     const cookie = localStorage.getItem('crypto-bot.cookie');
-    if (cookie)
+    if (cookie !== undefined && cookie !== null)
       this.showCookie = !this.showCookie;
   },
   methods: {

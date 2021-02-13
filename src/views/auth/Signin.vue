@@ -100,7 +100,7 @@ export default {
     data() {
       return {
         phonenumber: null,
-        error: null,
+        error: this.$route.params.error,
       }
     },
     methods: {
@@ -118,7 +118,6 @@ export default {
               notification: response.data.code
             }});
           }
-          console.log(response);
         }).catch(e => {
           this.error = JSON.parse(e.request.response);
         });

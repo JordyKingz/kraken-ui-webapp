@@ -28,14 +28,28 @@ const routes: Array<RouteConfig> = [
     component: Validate
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/:id',
     name: 'dashboard',
-    component: Dashboard
+    component: Dashboard,
+    meta: {
+      isAuthenticatedRoute: true,
+    }
   },
   {
     path: '/account/deposit',
     name: 'account.deposit',
-    component: Deposit
+    component: Deposit,
+    meta: {
+      isAuthenticatedRoute: true,
+    }
+  },
+  {
+    path: '/account/deposit/:paymentId',
+    name: 'account.deposit',
+    component: Deposit,
+    meta: {
+      isAuthenticatedRoute: true,
+    }
   },
 ]
 
@@ -44,5 +58,19 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, _from, next) => {
+  if (to.matched.some((record) => record.meta.isAuthenticatedRoute)) {
+
+    const bearerToken = sessionStorage.getItem('crypto.auth.bearer');
+
+    if (bearerToken === undefined || bearerToken === null)
+      return next({name: 'sign-in'});
+
+    return next();
+  }
+
+  next();
+});
 
 export default router
