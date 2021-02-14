@@ -55,7 +55,7 @@
           -->
           <div v-if="showDropdownMenu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Settings</a>
-            <router-link :to="{name: 'sign-in'}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Logout</router-link>
+            <a v-on:click="signOut" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Logout</a>
           </div>
         </div>
       </div>
@@ -74,6 +74,11 @@ export default {
   methods: {
     toggleMobileSidebar: function () {
       this.$emit('toggleMobileSidebar');
+    },
+    signOut: function () {
+      sessionStorage.removeItem('crypto.auth.bearer');
+      sessionStorage.removeItem('crypto.auth.id');
+      this.$router.push('sign-in');
     }
   }
 }

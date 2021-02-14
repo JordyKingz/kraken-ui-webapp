@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Signin from '../views/auth/Signin.vue'
 import Validate from '../views/auth/Validate.vue'
 import Dashboard from '../views/cp/Dashboard.vue'
+import Portfolio from '../views/cp/Portfolio.vue'
 import Deposit from '../views/account/Deposit.vue'
 
 Vue.use(VueRouter)
@@ -36,7 +37,15 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: '/account/deposit',
+    path: '/portfolio/:id',
+    name: 'portfolio',
+    component: Portfolio,
+    meta: {
+      isAuthenticatedRoute: true,
+    }
+  },
+  {
+    path: '/account/deposit/:id',
     name: 'account.deposit',
     component: Deposit,
     meta: {
@@ -44,8 +53,8 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: '/account/deposit/:paymentId',
-    name: 'account.deposit',
+    path: '/account/deposit/:id/status/:paymentId',
+    name: 'account.deposit.status',
     component: Deposit,
     meta: {
       isAuthenticatedRoute: true,

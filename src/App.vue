@@ -15,9 +15,11 @@ export default {
   components: {
     Cookie
   },
-  data: () => ({
-    showCookie: true,
-  }),
+  data: function () {
+    return {
+      showCookie: true,
+    }
+  },
   beforeMount: function () {
     this.$store.dispatch("initTheme");
 

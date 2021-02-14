@@ -30,11 +30,13 @@
             <label for="phonenumber" class="block text-sm font-medium text-gray-700">
               Mobile number
             </label>
-            <div class="mt-1">
-              <input id="phonenumber" v-model="phonenumber"  required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <div class="mt-1 flex rounded-md shadow-sm">
+              <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                +31 6
+              </span>
+              <input type="text" id="phonenumber" v-model="phonenumber" required class="flex-1 min-w-0 block border w-full px-3 py-2 rounded-none rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300" placeholder="13223407">
             </div>
           </div>
-
           <div>
             <button v-on:click="signin" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               Sign in
@@ -97,7 +99,7 @@ import axios from 'axios'
 
 export default {
     name: "sign-in.vue",
-    data() {
+    data: function () {
       return {
         phonenumber: null,
         error: this.$route.params.error,

@@ -123,7 +123,7 @@ import axios from 'axios'
 
 export default {
     name: "validate.vue",
-    data() {
+    data: function () {
       return {
         code: null,
         validationCode: this.$route.params.notification,

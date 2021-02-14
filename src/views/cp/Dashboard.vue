@@ -10,7 +10,7 @@
           @toggleMobileSidebar="toggleMobileSidebar"
       />
       <main class="flex-1 relative pb-8 z-0 overflow-y-auto">
-        <Header />
+        <Header :balance="user.balance" @deposit="deposit" />
         <div class="mt-8">
           <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-lg leading-6 font-medium text-gray-900">Overview</h2>
@@ -92,8 +92,12 @@
                         EURO
                       </td>
                       <td class="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
+
+                        <span v-if="activity.paid === '1'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
                           success
+                        </span>
+                        <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 capitalize">
+                          failed
                         </span>
                       </td>
                       <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-gray-500">
@@ -160,8 +164,9 @@ export default {
     TopHeader,
     Header
   },
-  data () {
+  data: function () {
     return {
+      id: this.$route.params.id,
       activity: [],
       user: {},
       showMobileSidebar: false,
@@ -184,11 +189,11 @@ export default {
   mounted: async function () {
     if (this.sessionToken === undefined || this.sessionToken === null) {
       this.$router.push({ name: 'sign-in', params: {
-          error: {
-            exception: "Token is not valid.",
-            message:  "Your authentication token expired."
-          }
-        }});
+        error: {
+          exception: "Token is not valid.",
+          message:  "Your authentication token expired."
+        }
+      }});
     }
 
     await this.fetchUserData();
@@ -205,11 +210,23 @@ export default {
           this.activity = this.user.payments;
         }
       }).catch(e => {
+        if (e.request.status === 404) {
+          // No user found with token. Return to sign-in page
+          this.$router.push({ name: 'sign-in', params: {
+            error: {
+              exception: "Token is not valid.",
+              message:  "Your authentication token expired."
+            }
+          }});
+        }
         this.error = JSON.parse(e.request.response);
       });
     },
     deposit: function () {
-      this.$router.push({ name: 'account.deposit'} );
+      console.log(this.user);
+      this.$store.state.user = this.user;
+      console.log(this.$store.getters.user);
+      this.$router.push({ name: 'account.deposit', params: {id: this.id}} );
     },
     toggleMobileSidebar: function () {
       this.showMobileSidebar = !this.showMobileSidebar;
